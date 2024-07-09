@@ -1,6 +1,7 @@
 import type {Translation} from "@/types/Translation";
+import type {DriveAssistance} from "@/types/CarEquipment";
 
-export const DriveAssistanceTranslations: Translation = {
+export const DriveAssistanceTranslations: Translation<DriveAssistance> = {
         title: 'System wspomagania kierowcy',
         values: {
                 tempomat: 'Rodzaj tempomatu',

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import EquipementExpansionPanel from "@/components/CarOffer/EquipementExpansionPanel.vue";
 import {carEquipmentTranslations} from "@/translations/CarEquipmentTranslations";
-import {onMounted, ref, watch} from "vue";
-import type {CarEquipment, CarEquipmentKeys, CarEquipmentValues, CarEquipmentValuesKeys} from "@/types/CarEquipment";
+import {onMounted, ref} from "vue";
+import type {CarEquipment} from "@/types/CarEquipment";
+import {cloneDeep} from "lodash";
 
 interface Props {
   equipment: CarEquipment;
@@ -11,28 +12,29 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const equipmentState = ref<CarEquipment>({} as CarEquipment);
+const equipmentState = ref<CarEquipment | null>(null);
 
-function setTruthyValues(): void {
-  for (const equipmentCategory in props.equipment) {
-    const typedEquipmentItem = equipmentCategory as CarEquipmentKeys;
+function removeFalsyValues(equipment: CarEquipment): CarEquipment {
+  const equipmentCopy = cloneDeep(equipment);
 
-    Object.keys(props.equipment[typedEquipmentItem]).forEach(equipmentItemKey => {
-      const typedEquipmentItemKey = equipmentItemKey as CarEquipmentValuesKeys;
-      const equipmentValue = (props.equipment as any)[typedEquipmentItem as any][typedEquipmentItemKey as any];
-      if(equipmentValue) {
-        (equipmentState.value as any)[typedEquipmentItem as any] = {
-          ...equipmentState.value[typedEquipmentItem],
-          [typedEquipmentItemKey]: equipmentValue
-        };
-      }
+  let equipmentCategory: keyof CarEquipment;
+  for (equipmentCategory in equipmentCopy) {
+
+    Object.keys(equipmentCopy[equipmentCategory]).forEach((equipmentItemKey: string) => {
+        const typedEquipmentItemKey = equipmentItemKey as keyof typeof equipmentCopy[typeof equipmentCategory];
+
+        if (!equipmentCopy[equipmentCategory][typedEquipmentItemKey]) {
+          delete equipmentCopy[equipmentCategory][typedEquipmentItemKey]
+        }
     })
   }
+
+  return equipmentCopy;
 }
 
 onMounted(() => {
   if (props.readonly) {
-    setTruthyValues();
+    equipmentState.value = removeFalsyValues(props.equipment);
   } else {
     equipmentState.value = props.equipment;
   }
@@ -47,8 +49,7 @@ onMounted(() => {
       <EquipementExpansionPanel
           v-for="(equipmentValues, equipmentCategory) in equipmentState"
           :readonly="readonly"
-          :title="carEquipmentTranslations[equipmentCategory].title"
-          :translations="carEquipmentTranslations[equipmentCategory].values"
+          :translations-data="carEquipmentTranslations[equipmentCategory]"
           :values="equipmentValues"
       />
     </v-expansion-panels>

@@ -1,12 +1,17 @@
 <script setup lang="ts">
   import {computed} from "vue";
-  import {carEquipmentSelectItems, type CarEquipmentValues, type CarEquipmentValuesKeys} from "@/types/CarEquipment";
+  import {
+    type CarEquipment,
+    carEquipmentSelectItems,
+  } from "@/types/CarEquipment";
+  import CheckmarkDisplayData from "@/components/CheckmarkDisplayData.vue";
+  import type {TranslationsData} from "@/translations/CarEquipmentTranslations";
+  import {isBoolean} from "lodash";
 
   interface Props {
-    title: string;
-    translations: Partial<Record<CarEquipmentValuesKeys,string>>;
-    values:  CarEquipmentValues;
     readonly: boolean;
+    translationsData: TranslationsData[keyof CarEquipment];
+    values: CarEquipment[keyof CarEquipment];
   }
 
   const props = defineProps<Props>();
@@ -16,42 +21,28 @@
     return Math.ceil(length / 10);
   })
 
-  function isBoolean(value?: boolean | string): value is boolean {
-    return typeof value === "boolean";
-  }
-
 </script>
 
 <template>
-  <v-expansion-panel
-      v-if="Object.keys(values).length"
-  >
-    <v-expansion-panel-title class="expansion-panel-title">{{title}}</v-expansion-panel-title>
+  <v-expansion-panel v-if="Object.keys(values).length">
+    <v-expansion-panel-title class="expansion-panel-title">{{translationsData.title}}</v-expansion-panel-title>
     <v-expansion-panel-text class="expansion-panel-content--container">
-      <div
-          v-for="(itemValue, itemKey) in values"
-      >
-
+      <div v-for="(itemValue, itemKey) in values">
         <div
             v-if="readonly"
             class="expansion-panel-content"
         >
-          <v-icon :icon="'mdi-check'"/>
-
-          <p v-if="isBoolean(itemValue)">
-            {{translations[itemKey]}}
-          </p>
-
-          <p v-else>
-            {{`${translations[itemKey]} ${itemValue}`}}
-          </p>
+          <CheckmarkDisplayData
+              :title="translationsData.values[itemKey]"
+              :value="itemValue"
+          />
         </div>
 
         <div v-else>
 
           <v-checkbox
               v-if="isBoolean(itemValue)"
-              :label="translations[itemKey]"
+              :label="translationsData.values[itemKey]"
               :model-value="itemValue"
               hide-details
           />
@@ -60,7 +51,7 @@
               v-else
               variant="outlined"
               :style="{flex: 1}"
-              :label="translations[itemKey]"
+              :label="translationsData.values[itemKey]"
               :items="carEquipmentSelectItems[itemKey]"
               :model-value="itemValue"
           />

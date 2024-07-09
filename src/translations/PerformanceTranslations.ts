@@ -1,6 +1,7 @@
 import type {Translation} from "@/types/Translation";
+import type {Performance} from "@/types/CarEquipment";
 
-export const PerformanceTranslations: Translation  = {
+export const PerformanceTranslations: Translation<Performance>  = {
     title: 'Osiągi i tuning',
     values: {
         oponyRunFlat: 'Opony runflat',

@@ -1,6 +1,4 @@
-import type {CarEquipmentValuesKeys} from "@/types/CarEquipment";
-
-export interface Translation {
+export interface Translation<T> {
     title: string;
-    values: Partial<Record<CarEquipmentValuesKeys, string >>
+    values: Record<keyof T, string>;
 }

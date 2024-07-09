@@ -181,20 +181,3 @@ export interface CarEquipment {
     performance: Performance;
     safety: Safety
 }
-
-export type CarEquipmentKeys = keyof CarEquipment;
-export type CarEquipmentValuesKeys =
-    keyof CarEquipment["audioMultimedia"] |
-    keyof CarEquipment["safety"] |
-    keyof CarEquipment["comfort"] |
-    keyof CarEquipment["electric"] |
-    keyof CarEquipment["driveAssistance"] |
-    keyof CarEquipment["performance"];
-
-export type CarEquipmentValues =
-    CarEquipment["audioMultimedia"] |
-    CarEquipment["safety"] |
-    CarEquipment["comfort"] |
-    CarEquipment["electric"] |
-    CarEquipment["driveAssistance"] |
-    CarEquipment["performance"]
