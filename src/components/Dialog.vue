@@ -1,16 +1,28 @@
 <script setup lang="ts">
   import {ref} from "vue";
+  import type {DialogActions} from "@/types/DialogActions";
 
   interface Props {
-    opacity: number;
+    title: string;
+    actions?: DialogActions;
+    contentOnly?: boolean;
     fullscreen?: boolean;
-    title?: string;
-    hideActions?: boolean
+    backgroundColor?: string;
   }
 
-  defineProps<Props>()
+  const props = withDefaults(defineProps<Props>(), {
+    contentOnly: false,
+    fullscreen: false,
+    backgroundColor: 'white'
+  })
 
   const isOpen = ref<boolean>(false);
+
+  function handleConfirmAction(): void {
+    if (props.actions) {
+      props.actions.confirm.action();
+    }
+  }
 
   function openDialog(): void {
     isOpen.value = true;
@@ -31,32 +43,33 @@
   <v-dialog
       v-model="isOpen"
       :fullscreen="fullscreen"
-      :opacity="opacity"
       :class="fullscreen ? 'w-100' : 'w-75'"
   >
 
     <template #default>
-      <v-card :style="{backgroundColor: fullscreen ? 'black' : 'white'}" class="elevation-24">
-        <v-card-title v-if="title">{{title}}</v-card-title>
+      <v-card :style="{backgroundColor: backgroundColor}">
+        <v-card-title v-if="!contentOnly">{{title}}</v-card-title>
 
         <div class="dialog-container overflow-y-auto">
-          <slot name="content"/>
+          <v-card-text>
+            <slot name="content"/>
+          </v-card-text>
         </div>
 
-        <v-card-actions v-if="!hideActions">
+        <v-card-actions v-if="!contentOnly && actions">
           <div class="dialog-actions">
             <v-btn
                 class="action-btn"
                 @click="closeDialog"
             >
-              <span class="action-btn--content">{{'ZAMKNIJ'}}</span>
+              <span class="action-btn--content">{{actions.close.label}}</span>
             </v-btn>
 
             <v-btn
                 class="action-btn"
-                @click="closeDialog"
+                @click="handleConfirmAction"
             >
-              <span class="action-btn--content">{{'ZAPISZ'}}</span>
+              <span class="action-btn--content">{{actions.confirm.label}}</span>
             </v-btn>
 
           </div>

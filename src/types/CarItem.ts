@@ -25,7 +25,7 @@ export interface CarItem {
     kraj: string | null;
     liczbaWlacicieli: number | null;
     cena: number | null;
-    vin: number | null;
+    vin: string | null;
     rejestracja: string | null;
     equipment: CarEquipment;
     description: string | null;

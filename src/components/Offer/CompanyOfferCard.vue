@@ -11,8 +11,6 @@
 
 <template>
   <v-card class="offer-card">
-<!--    <v-img class="company-svg" :src="companySVG"/>-->
-
     <v-container class="offer-card--container">
       <v-row class="card-title-container">
         <v-col>
@@ -40,8 +38,6 @@
         </v-col>
       </v-row>
     </v-container>
-
-<!--    <v-img class="company-svg-2" :src="companySVG"/>-->
   </v-card>
 </template>
 

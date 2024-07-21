@@ -1,16 +1,33 @@
 <script setup lang="ts">
 
 import Dialog from "@/components/Dialog.vue";
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import CarDialogForm from "@/components/CarOffer/CarDialogForm.vue";
 import type {CarItem} from "@/types/CarItem";
 import {defaultCarItem} from "@/utils/temporary-car-items";
+import type {DialogActions} from "@/types/DialogActions";
 
-
-
-
-const dialog = ref<InstanceType<typeof Dialog>>();
 const carModel = ref<CarItem>(defaultCarItem);
+const dialog = ref<InstanceType<typeof Dialog>>();
+const carForm = ref<InstanceType<typeof CarDialogForm>>();
+const dialogActions = ref<DialogActions>({
+  confirm: {
+    label: "Zapisz",
+    action: () => {
+      carForm.value?.handleSubmit();
+    },
+  },
+  close: {
+    label: "Zamknij",
+    action: () => {},
+  }
+})
+
+function handleUpdate(newCarItem: CarItem): void {
+  carModel.value = newCarItem;
+
+  closeDialog();
+}
 
 function openDialog(carItem?: CarItem): void {
   if (carItem) {
@@ -33,16 +50,15 @@ defineExpose({
 <template>
   <Dialog
       ref="dialog"
-      :opacity="0"
       title="Nowe ogłoszenie"
+      :actions="dialogActions"
   >
     <template #content>
-        <v-card-text class="h-100">
-          <CarDialogForm
-              :car-model="carModel"
-          />
-        </v-card-text>
-
+      <CarDialogForm
+          ref="carForm"
+          :carItem="carModel"
+          @update:carItem="handleUpdate"
+      />
     </template>
   </Dialog>
 </template>

@@ -14,12 +14,23 @@
     values: CarEquipment[keyof CarEquipment];
   }
 
+  interface ItemData {
+    key: keyof (CarEquipment[keyof CarEquipment]);
+    value: CarEquipment[keyof CarEquipment][keyof (CarEquipment[keyof CarEquipment])];
+  }
+
+  interface Emits {
+    (e:'item-update', data: ItemData): void
+  }
+
   const props = defineProps<Props>();
+  const emit = defineEmits<Emits>()
 
   const numberOfGridColumns = computed(() => {
     const length = Object.keys(props.values).length;
     return Math.ceil(length / 10);
   })
+
 
 </script>
 
@@ -45,15 +56,16 @@
               :label="translationsData.values[itemKey]"
               :model-value="itemValue"
               hide-details
+              @update:model-value="emit('item-update',{key: itemKey, value: itemValue})"
           />
 
           <v-select
               v-else
+              :model-value="itemValue"
               variant="outlined"
               :style="{flex: 1}"
               :label="translationsData.values[itemKey]"
               :items="carEquipmentSelectItems[itemKey]"
-              :model-value="itemValue"
           />
         </div>
       </div>

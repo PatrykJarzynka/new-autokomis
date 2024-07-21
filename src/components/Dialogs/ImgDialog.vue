@@ -30,9 +30,10 @@ defineExpose({
 <template>
   <Dialog
       ref="dialog"
+      title="img"
+      :background-color="'#000'"
       :fullscreen="true"
-      :opacity="1"
-      :hide-actions="true"
+      :content-only="true"
   >
     <template #content>
       <v-btn

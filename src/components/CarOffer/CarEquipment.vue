@@ -51,6 +51,7 @@ onMounted(() => {
           :readonly="readonly"
           :translations-data="carEquipmentTranslations[equipmentCategory]"
           :values="equipmentValues"
+          @item-update="(value) => console.log(value)"
       />
     </v-expansion-panels>
 </template>
