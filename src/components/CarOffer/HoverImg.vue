@@ -17,9 +17,9 @@ defineProps<Props>()
     <template #default="{ isHovering, props }">
       <div
           v-bind="props"
+          :draggable="true"
           :class="imgIndex === 0 ? 'main-img' : ''"
           class="hover-img-container"
-          :draggable="true"
           @dragstart="emit('dragstart', $event)"
           @drop="emit('drop', $event)"
       >

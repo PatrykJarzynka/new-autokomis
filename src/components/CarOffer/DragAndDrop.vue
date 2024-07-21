@@ -63,9 +63,11 @@ watch(() => props.imgUrls, (newImgs) => {
   }
 
   function handleUploadClick(): void {
-    let input = document.createElement('input');
-    input.type = 'file';
-    input.click();
+    const input = document.getElementById('file-uploader');
+
+    if(input) {
+      input.click();
+    }
   }
 
   function handleDelete(index: number): void {
@@ -112,6 +114,17 @@ watch(() => props.imgUrls, (newImgs) => {
     array[itemIndexOne] = array[Number(itemIndexTwo)];
     array[Number(itemIndexTwo)] = temporaryVariable;
   }
+
+  function handleImportImg(event: Event): void {
+    if (event.target) {
+      Array.from((event.target as HTMLInputElement).files).forEach(file => {
+        localFiles.value.push({
+          name: file.name,
+          url: URL.createObjectURL(file)
+        })
+      })
+    }
+  }
 </script>
 
 <template>
@@ -143,6 +156,14 @@ watch(() => props.imgUrls, (newImgs) => {
         <div v-else>
           <p>Upuść pliki tutaj</p>
         </div>
+
+        <input
+            id="file-uploader"
+            type="file"
+            multiple
+            :style="{display: 'none'}"
+            @change="handleImportImg"
+        />
       </div>
 
 
