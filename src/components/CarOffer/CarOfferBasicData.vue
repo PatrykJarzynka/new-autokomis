@@ -88,7 +88,7 @@
         <span class="car-price--label">
           Cena:
         </span>
-        4000PLN
+       {{item.cena}}PLN
       </p>
     </div>
 

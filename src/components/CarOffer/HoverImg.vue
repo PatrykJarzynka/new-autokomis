@@ -6,7 +6,9 @@
 
 defineProps<Props>()
   const emit = defineEmits<{
-    (e: 'delete', index: number): void
+    (e: 'delete', index: number): void;
+    (e: 'dragstart', event: DragEvent): void;
+    (e: 'drop', event: DragEvent): void;
   }>()
 </script>
 
@@ -17,6 +19,9 @@ defineProps<Props>()
           v-bind="props"
           :class="imgIndex === 0 ? 'main-img' : ''"
           class="hover-img-container"
+          :draggable="true"
+          @dragstart="emit('dragstart', $event)"
+          @drop="emit('drop', $event)"
       >
         <div
             v-if="isHovering"

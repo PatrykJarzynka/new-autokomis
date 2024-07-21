@@ -35,7 +35,7 @@ function handleClick(itemId: string): void {
             <v-card-subtitle>{{car.pojemnosc + ' cm3'}}</v-card-subtitle>
           </div>
 
-          <v-card-text class="price">4000PLN</v-card-text>
+          <v-card-text class="price">{{car.cena}}PLN</v-card-text>
 
         </v-card>
       </div>

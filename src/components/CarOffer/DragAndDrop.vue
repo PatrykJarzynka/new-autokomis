@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import HoverImg from "@/components/CarOffer/HoverImg.vue";
-import { v4 as uuidv4 } from 'uuid';
 import {remove} from "lodash";
 import { toast } from 'vue3-toastify';
 
@@ -92,6 +91,27 @@ watch(() => props.imgUrls, (newImgs) => {
           theme: 'colored'
         });
   }
+
+  function handleDragStartLocalImg(event: DragEvent, imgIndex: number): void {
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('imgIndex', imgIndex.toString())
+    }
+  }
+
+  function handleDropLocalImg(event: DragEvent, imgIndex: number): void {
+    if (event.dataTransfer) {
+      const dragImgIndex = Number(event.dataTransfer.getData('imgIndex'))
+      swapItems(localFiles.value, imgIndex, dragImgIndex)
+    }
+  }
+
+  function swapItems(array: any[], itemIndexOne: number, itemIndexTwo: number): void {
+    let temporaryVariable = array[itemIndexOne];
+    array[itemIndexOne] = array[Number(itemIndexTwo)];
+    array[Number(itemIndexTwo)] = temporaryVariable;
+  }
 </script>
 
 <template>
@@ -135,6 +155,8 @@ watch(() => props.imgUrls, (newImgs) => {
             :img-index="fileIndex"
             :src="file.url"
             @delete="handleDelete"
+            @dragstart="(event) => handleDragStartLocalImg(event, fileIndex)"
+            @drop="(event) => handleDropLocalImg(event, fileIndex)"
         />
 
       </div>
