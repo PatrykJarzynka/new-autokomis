@@ -1,13 +1,12 @@
 <script setup lang="ts">
   interface Props {
     src: string;
-    fileId: string;
-    mainImg?: boolean
+    imgIndex: number;
   }
 
 defineProps<Props>()
   const emit = defineEmits<{
-    (e: 'delete', id: string): void
+    (e: 'delete', index: number): void
   }>()
 </script>
 
@@ -16,7 +15,7 @@ defineProps<Props>()
     <template #default="{ isHovering, props }">
       <div
           v-bind="props"
-          :class="mainImg ? 'main-img' : ''"
+          :class="imgIndex === 0 ? 'main-img' : ''"
           class="hover-img-container"
       >
         <div
@@ -26,7 +25,7 @@ defineProps<Props>()
             <v-btn
                 size="50"
                 class="rounded-circle"
-                @click="emit('delete', fileId)"
+                @click="emit('delete', imgIndex)"
             >
               <v-icon
                   class="icon-delete"

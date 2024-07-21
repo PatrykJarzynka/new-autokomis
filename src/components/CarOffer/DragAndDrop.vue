@@ -6,7 +6,6 @@ import {remove} from "lodash";
 import { toast } from 'vue3-toastify';
 
   interface FileInterface {
-    id: string;
     name: string;
     url: string;
   }
@@ -23,7 +22,7 @@ import { toast } from 'vue3-toastify';
 
 watch(() => props.imgUrls, (newImgs) => {
   if (newImgs) {
-    gege(newImgs)
+    insertCarImages(newImgs)
   }
 }, {immediate: true})
 
@@ -57,7 +56,6 @@ watch(() => props.imgUrls, (newImgs) => {
         handleWrongTypeOfFile();
       } else {
         localFiles.value.push({
-          id: uuidv4(),
           name: file.name,
           url: URL.createObjectURL(file)
         })
@@ -71,14 +69,13 @@ watch(() => props.imgUrls, (newImgs) => {
     input.click();
   }
 
-  function handleDelete(id: string): void {
-    remove(localFiles.value, (file) => file.id === id);
+  function handleDelete(index: number): void {
+    remove(localFiles.value, (file, fileIndex) => fileIndex === index);
   }
 
-  function gege(imgUrls: string[]): void {
+  function insertCarImages(imgUrls: string[]): void {
     imgUrls.forEach(imgUrl => {
       localFiles.value.push({
-        id: uuidv4(),
         name: 'testName',
         url: imgUrl,
       })
@@ -95,8 +92,6 @@ watch(() => props.imgUrls, (newImgs) => {
           theme: 'colored'
         });
   }
-
-
 </script>
 
 <template>
@@ -136,15 +131,8 @@ watch(() => props.imgUrls, (newImgs) => {
           class="preview-container"
       >
         <HoverImg
-            :file-id="localFiles[0].id"
-            :src="localFiles[0].url"
-            :main-img="true"
-            @delete="handleDelete"
-        />
-
-        <HoverImg
-            v-for="file in localFiles.slice(1,localFiles.length)"
-            :file-id="file.id"
+            v-for="(file, fileIndex) in localFiles"
+            :img-index="fileIndex"
             :src="file.url"
             @delete="handleDelete"
         />
