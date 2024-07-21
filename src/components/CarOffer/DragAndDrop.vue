@@ -3,6 +3,7 @@ import {computed, ref, watch} from "vue";
 import HoverImg from "@/components/CarOffer/HoverImg.vue";
 import { v4 as uuidv4 } from 'uuid';
 import {remove} from "lodash";
+import { toast } from 'vue3-toastify';
 
   interface FileInterface {
     id: string;
@@ -53,7 +54,7 @@ watch(() => props.imgUrls, (newImgs) => {
   function previewFiles(files: FileList): void {
     for (const file of files) {
       if (!allowedFileTypes.includes(file.type)) {
-        return
+        handleWrongTypeOfFile();
       } else {
         localFiles.value.push({
           id: uuidv4(),
@@ -82,6 +83,17 @@ watch(() => props.imgUrls, (newImgs) => {
         url: imgUrl,
       })
     })
+  }
+
+  function handleWrongTypeOfFile(): void {
+    isDragging.value = false;
+    toast('Niewłaściwy typ pliku!',
+        {
+          type: 'error',
+          position: 'bottom-center',
+          transition: "slide",
+          theme: 'colored'
+        });
   }
 
 
@@ -183,6 +195,10 @@ $numberOfGridRows: v-bind(numberOfGridRows);
 .upload-imgs-btn {
   background-color: $secondaryColor;
   color: white;
+}
+
+.progress-bar-container {
+  background-color: white;
 }
 
 </style>

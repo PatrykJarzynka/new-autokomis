@@ -2,8 +2,20 @@
 
 import Dialog from "@/components/Dialog.vue";
 import {ref} from "vue";
+import type {DialogActions} from "@/types/DialogActions";
 
-const dialog = ref<InstanceType<typeof Dialog>>()
+const dialog = ref<InstanceType<typeof Dialog>>();
+
+const dialogActions = ref<DialogActions>({
+  confirm: {
+    label: "Ok",
+    action: () => {},
+  },
+  close: {
+    label: "Zamknij",
+    action: () => {},
+  }
+})
 
 function openDialog(): void {
   dialog.value?.openDialog()
@@ -23,11 +35,12 @@ defineExpose({
 <template>
   <Dialog
       ref="dialog"
-      :opacity="0"
+      :title="'Potwierdź akcje'"
+      :actions="dialogActions"
   >
     <template #content>
       <v-card-text class="h-100">
-        <v-card-text>
+        <v-card-text class="dialog-content">
           {{'Czy na pewno chcesz usunąć ofertę?'}}
         </v-card-text>
       </v-card-text>
@@ -37,5 +50,9 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+
+.dialog-content {
+  font-size: 18px;
+}
 
 </style>

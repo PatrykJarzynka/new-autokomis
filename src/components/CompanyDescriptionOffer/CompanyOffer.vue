@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import CompanyOfferCard from "@/components/Offer/CompanyOfferCard.vue";
+import CompanyOfferCard from "@/components/CompanyDescriptionOffer/CompanyOfferCard.vue";
 import {companyItems} from "@/utils/company-items";
 </script>
 

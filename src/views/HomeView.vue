@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CompanyMainTile from "@/components/Home/CompanyMainTile.vue";
-import CompanyOffer from "@/components/Offer/CompanyOffer.vue";
+import CompanyOffer from "@/components/CompanyDescriptionOffer/CompanyOffer.vue";
 import CompanyContactCard from "@/components/Home/CompanyContactCard.vue";
 
 </script>

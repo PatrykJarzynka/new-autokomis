@@ -3,9 +3,9 @@ import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import {bodyType, type CarItem, driveType, fuelType} from "@/types/CarItem";
 import useStringConverter from "@/composables/useStringConverter";
 import CarEquipment from "@/components/CarOffer/CarEquipment.vue";
-import DragDropImg from "@/components/CarOffer/DragDropImg.vue";
 import {ref} from "vue";
 import type {VForm} from "vuetify/components";
+import DragAndDrop from "@/components/CarOffer/DragAndDrop.vue";
 
 interface Props {
   carItem: CarItem;
@@ -204,7 +204,7 @@ defineExpose({
       <v-divider class="pb-4"/>
 
       <v-container class="description-container">
-          <DragDropImg
+          <DragAndDrop
               :img-urls="carData.imgs"
           />
 
