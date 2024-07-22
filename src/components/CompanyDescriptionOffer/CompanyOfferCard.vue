@@ -1,43 +1,48 @@
 <script setup lang="ts">
   import type {companyItems} from "@/utils/company-items";
   import companySVG from '@/assets/images/newSVG.svg'
+  import {computed} from "vue";
+
+  type Location = 'left' | 'right'
 
   interface Props {
-    item: typeof companyItems[number]
+    item: typeof companyItems[number];
   }
 
-  defineProps<Props>()
+  defineProps<Props>();
+
 </script>
 
 <template>
   <v-card class="offer-card">
-    <v-container class="offer-card--container">
-      <v-row class="card-title-container">
-        <v-col>
-          <v-card-title class="card-title">
-            {{item.itemTitle}}
-          </v-card-title>
-        </v-col>
-      </v-row>
+    <v-row
+        :class="item.location === 'left' ? 'container-left' : 'container-right'"
+        class="offer-row-container"
+    >
+      <v-col
+          class="img-column"
+          cols="8"
+      >
+        <img
+            class="item-img"
+            :src="'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg'"
+        />
 
-      <v-row>
-        <v-col class="card-icon-column">
-          <v-icon
-              class="card-icon"
-              :icon="item.itemIcon"
-              :color="item.iconColor"
-          />
-        </v-col>
-      </v-row>
+      </v-col>
 
-      <v-row>
-        <v-col>
-          <v-card-text class="card-text">
-            {{item.itemDescription}}
-          </v-card-text>
-        </v-col>
-      </v-row>
-    </v-container>
+      <v-col
+          cols="6"
+          class="description-column"
+      >
+        <div class="description-container">
+          <p>GEGEGEHEHEHEH</p>
+
+          <div>
+            <p>XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD</p>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
@@ -48,54 +53,68 @@
   display: flex;
   border: 5px solid $primaryColor;
   border-radius: 30px;
-  flex: 1;
+  height: 550px;
+}
 
-  &--container {
-    display: grid;
-    grid-template-rows: 1fr 1fr auto;
+.description-column {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+
+  background-color: $primaryColor;
+  z-index: 2;
+}
+
+.img-column {
+  height: 100%;
+  padding: 0;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+}
+
+.item-img {
+  height: 100%;
+  width: 100%;
+}
+
+.description-container {
+  position: absolute;
+  padding: 20px;
+  width: 75%;
+}
+
+.container-left {
+  .img-column {
+    right: 0;
+  }
+
+  .description-column {
+    left: 0;
+    clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+  }
+
+  .description-container {
+    left: 0;
   }
 }
 
-.card-title {
-  white-space: break-spaces;
-  text-align: center;
+.container-right {
+  .img-column {
+    left: 0;
+  }
+
+  .description-column {
+    right: 0;
+    clip-path: polygon(100% 0%, 100% 49%, 100% 100%, 25% 100%, 0% 50%, 25% 0%);
+  }
+
+  .description-container {
+    right: 0;
+  }
 }
 
-.card-title-container {
-  display: flex;
-  align-items: center;
-}
 
-.card-icon {
-  font-size: 100px;
-}
 
-.card-icon-column {
-  display: flex;
-  justify-content: center;
-}
-
-.card-text {
-  font-size: 16px;
-  text-align: justify;
-}
-
-//.company-svg {
-//  width: 40%;
-//  height: 100%;
-//  position: absolute;
-//  left: -40px;
-//  top:-75px;
-//  z-index: -1;
-//}
-//
-//.company-svg-2 {
-//  width: 40%;
-//  height: 100%;
-//  position: absolute;
-//  right: -40px;
-//  bottom:-75px;
-//  z-index: -1;
-//}
 
 </style>

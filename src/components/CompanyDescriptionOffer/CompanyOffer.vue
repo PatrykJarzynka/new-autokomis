@@ -5,19 +5,21 @@ import {companyItems} from "@/utils/company-items";
 </script>
 
 <template>
-  <v-row class="offer-container">
-    <v-col v-for="item in companyItems">
-      <CompanyOfferCard
-          :item="item"
-      />
-    </v-col>
-  </v-row>
+  <div class="offer-container">
+    <CompanyOfferCard
+        v-for="item in companyItems"
+        :item="item"
+    />
+  </div>
 </template>
 
 <style scoped lang="scss">
 @import '../../utils/colors';
 
 .offer-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 50px;
   width: 100%;
   margin: 0;
 }
