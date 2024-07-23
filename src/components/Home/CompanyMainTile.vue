@@ -19,13 +19,15 @@ import {companyItems} from "@/utils/company-items";
         <div class="company-tile--content-inner-container">
           <v-img class="company-logo" :src="logo"/>
 
-          <div class="company-items--container">
+          <div class="company-description--container">
+            <p class="company-description">
+              Szukasz niezawodnego auta, które spełni Twoje oczekiwania? Trafiłeś w idealne miejsce!
+              W naszym autokomisie oferujemy szeroki wybór używanych samochodów różnych marek i modeli.
+              Każdy pojazd w naszej ofercie przeszedł szczegółową kontrolę techniczną, aby zapewnić Ci maksymalne bezpieczeństwo i komfort jazdy.
+            </p>
 
-            <div
-              v-for="item in companyItems"
-              class="company-item"
-            >
-              <p class="item-text">{{item.itemTitle}}</p>
+            <div class="button-container">
+              <v-btn class="offer-button">SPRAWDŹ OFERTĘ</v-btn>
             </div>
           </div>
         </div>
@@ -75,23 +77,18 @@ import {companyItems} from "@/utils/company-items";
   }
 }
 
-.company-items {
+.company-description {
+  color: $primaryColor;
+  font-size: 22px;
+  font-weight: 600;
+
   &--container {
     display: flex;
     flex-direction: column;
-    row-gap: 30px;
+    padding: 25px;
+    width: 80%;
     flex: 2;
   }
-}
-
-.company-item {
-  display: flex;
-  align-items: center;
-  clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%);
-  background-color: $primaryColor;
-  width: 55%;
-  height: 80px;
-  padding-left: 20px;
 }
 
 .company-logo {
@@ -100,10 +97,18 @@ import {companyItems} from "@/utils/company-items";
   animation: 0.7s ease-out 0s 1 slideInFromLeft;
 }
 
-.item-text {
-  color: $defaultColor;
-  font-size: 25px;
-}
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 
+  .offer-button {
+    font-size: 20px;
+    height: 50px;
+    background-color: $accentColor;
+    color: $defaultColor;
+  }
+}
 
 </style>
