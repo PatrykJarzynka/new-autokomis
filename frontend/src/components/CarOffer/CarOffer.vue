@@ -2,24 +2,26 @@
 
 import useRouteHandler from "@/composables/routeHandler";
 import {computed, onMounted, ref} from "vue";
-import {temporaryCarItems} from "@/utils/temporary-car-items";
 import CarOfferBasicData from "@/components/CarOffer/CarOfferBasicData.vue";
 import CarEquipment from "@/components/CarOffer/CarEquipment.vue";
 import ImgDialog from "@/components/Dialogs/ImgDialog.vue";
 import CarDialog from "@/components/Dialogs/CarDialog.vue";
 import ConfirmationDialog from "@/components/Dialogs/ConfirmationDialog.vue";
 import type {CarItem} from "@/types/CarItem";
+import useCarsApi from "@/api/api.cars";
+import type {CarItemModel} from "@/models/CarItemModel";
 
 const { getRouteParam } = useRouteHandler();
-const carItem = ref<CarItem>();
+const carsApi = useCarsApi();
+const carItem = ref<CarItemModel>();
 const selectedItemIndex = ref<number>(0);
 const imgDialog = ref<InstanceType<typeof ImgDialog>>();
 const carDialog = ref<InstanceType<typeof CarDialog>>();
 const confirmationDialog = ref<InstanceType<typeof ConfirmationDialog>>()
 
-onMounted(() => {
-  const itemId = getRouteParam("id")
-  carItem.value = temporaryCarItems[0]
+onMounted(async () => {
+  const carId = getRouteParam("id")
+  carItem.value =  await carsApi.getCar(Number(carId))
 })
 
 const imgPreviewTranslateNumber = computed((): string => {

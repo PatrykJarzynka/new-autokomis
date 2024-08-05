@@ -2,12 +2,22 @@
 
 import {temporaryCarItems} from "@/utils/temporary-car-items";
 import {useRouter} from "vue-router";
+import type {CarItem} from "@/types/CarItem";
+import {onMounted, ref} from "vue";
+import useCarsApi from "@/api/api.cars";
 
 const router = useRouter();
+const { getAllCars } = useCarsApi();
 
 function handleClick(itemId: string): void {
   router.push({ path: `/oferta/${itemId}` });
 }
+
+const carItems = ref<CarItem[]>();
+
+onMounted(async () => {
+  carItems.value = await getAllCars();
+})
 </script>
 
 <template>
@@ -16,12 +26,13 @@ function handleClick(itemId: string): void {
       <RouterView/>
       <div class="offer-items-container">
         <v-card
-            v-for="car in temporaryCarItems"
+            v-for="car in carItems"
             @click="handleClick(car.id)"
         >
             <v-img
-                :src="car.imgs[0]"
+                :src="car?.imgs?.[0]"
                 :height="400"
+                :alt="`${car.title} zdjęcie`"
                 cover
             />
 

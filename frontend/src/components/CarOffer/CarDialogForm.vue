@@ -2,19 +2,28 @@
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import useStringConverter from "@/composables/useStringConverter";
 import CarEquipment from "@/components/CarOffer/CarEquipment.vue";
-import {ref, shallowRef, triggerRef} from "vue";
+import {ref} from "vue";
 import type {VForm} from "vuetify/components";
 import DragAndDrop from "@/components/CarOffer/DragAndDrop.vue";
-import type {CarItem} from "@/types/CarItem";
 import {bodyType, driveType, fuelType} from "@/types/CarEquipment";
 import type {EquipmentCategoryItemUpdate} from "@/types/EquipmentUpdate";
+import {cloneDeep, isNumber, remove} from "lodash";
+import type {CarItemExtended} from "@/types/CarItemExtended";
+import type {CarItemModel} from "@/models/CarItemModel";
+import type {ImageData, ImgDataBasic, ImgDataFileExtended} from "@/types/ImageData";
 
 interface Props {
-  carItem: CarItem;
+  carItem: CarItemModel;
 }
 
 interface Emits {
-  (e: 'update:carItem', data: CarItem): void;
+  (e: 'submit', data: CarItemExtended): void;
+}
+
+interface NewImage {
+  imgId: string;
+  imgFile: File;
+  mainImg: boolean;
 }
 
 const props = defineProps<Props>();
@@ -23,7 +32,10 @@ const emit = defineEmits<Emits>();
 const { upperCaseFirstLetter } = useStringConverter();
 
 const form = ref<InstanceType<typeof VForm>>();
+const dragDrop = ref<InstanceType<typeof DragAndDrop>>();
 const carData = ref(props.carItem);
+const carDataImages = ref<ImgDataBasic[]>(props.carItem.imgs.map(image => { return {imgPath: image.imgPath, imgId: image.imgId}}))
+const importedImages = ref<NewImage[]>([]);
 
 const rules = {
   required: (value:string | number) => !!value || 'To pole nie może pozostać puste',
@@ -31,15 +43,71 @@ const rules = {
 
 async function handleSubmit(): Promise<void> {
   const isValid = await form.value?.validate();
+  const convertedImages = selectMainImage(carDataImages.value);
+
+  importedImages.value = importedImages.value.map(importedImage => {
+    return {
+      imgId: importedImage.imgId,
+      imgFile: importedImage.imgFile,
+      mainImg: !!convertedImages.find(image => image.imgId === importedImage.imgId)?.mainImg
+    }
+  })
+
 
   if(isValid?.valid) {
-    emit('update:carItem', carData.value)
+
+    emit('submit', {
+      carItem: {
+        ...carData.value,
+        imgs: convertedImages.filter(image => !isNumber(image.imgId))
+      },
+      importedImages: importedImages.value,
+    })
   }
+}
+
+function selectMainImage(images: ImgDataBasic[]): ImageData[] {
+  return images.map((image, index) => {
+    return {
+      mainImg: index === 0,
+      imgId: image.imgId,
+      imgPath: image.imgPath
+    }
+  })
 }
 
 function handleUpdate(value: EquipmentCategoryItemUpdate) {
   Object.assign(carData.value.wyposazenie[value.equipmentKey], {[value.item.key]: value.item.value});
 }
+
+function handleDeleteImage(imgId: string): void {
+  remove(carDataImages.value, (img) => img.imgId === imgId);
+  remove(importedImages.value,(img) => img.imgId === imgId)
+}
+
+function handleUpdateImages(images: ImgDataFileExtended[]): void {
+  images.forEach((image, imageIndex) => {
+    const temporaryImageId = `new-file-${imageIndex}`
+
+    carDataImages.value.push({
+      imgPath: image.imgPath,
+      imgId: temporaryImageId,
+    })
+
+    importedImages.value.push({
+      imgId: temporaryImageId,
+      imgFile: image.file,
+      mainImg: false,
+    })
+  })
+}
+
+function handleSwapImages(indexOne: number, indexTwo: number): void {
+  let temporaryVariable = carDataImages.value[indexOne];
+  carDataImages.value[indexOne] = carDataImages.value[Number(indexTwo)];
+  carDataImages.value[Number(indexTwo)] = temporaryVariable;
+}
+
 
 defineExpose({
   handleSubmit
@@ -222,7 +290,11 @@ defineExpose({
 
       <v-container class="description-container">
           <DragAndDrop
-              :img-urls="carData.imgs"
+              ref="dragDrop"
+              :img-data="carDataImages"
+              @delete-item="handleDeleteImage"
+              @update-images="handleUpdateImages"
+              @swap-images="handleSwapImages"
           />
 
           <v-textarea

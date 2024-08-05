@@ -1,32 +1,28 @@
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, ref} from "vue";
 import HoverImg from "@/components/CarOffer/HoverImg.vue";
-import {remove} from "lodash";
-import { toast } from 'vue3-toastify';
-
-  interface FileInterface {
-    name: string;
-    url: string;
-  }
+import { toast } from 'vue3-toastify'
+import type {ImageData, ImgDataBasic, ImgDataFileExtended} from "@/types/ImageData";
 
   interface Props {
-    imgUrls?: string[] | null;
+    imgData: ImgDataBasic[]
   }
+
+  interface Emit {
+    (e: 'delete-item', imgId: string);
+    (e: 'update-images', images: ImgDataFileExtended[]): void;
+    (e: 'swap-images', indexOne: number, indexTwo: number): void;
+  }
+
 
   const props = defineProps<Props>();
-
+  const emit = defineEmits<Emit>()
   const allowedFileTypes = ['image/jpeg','image/gif','image/png','image/jpg'];
-  const localFiles = ref<FileInterface[]>([]);
   const isDragging = ref<boolean>(false);
 
-watch(() => props.imgUrls, (newImgs) => {
-  if (newImgs) {
-    insertCarImages(newImgs)
-  }
-}, {immediate: true})
-
   const numberOfGridRows = computed(() => {
-    return Math.ceil(localFiles.value.length / 4);
+    console.log(props.imgData)
+    return Math.ceil(props.imgData.length / 4);
   })
 
   function handleDragEnter(event: DragEvent): void {
@@ -44,22 +40,9 @@ watch(() => props.imgUrls, (newImgs) => {
   function handleDrop(event: DragEvent): void {
     const fileList = event.dataTransfer?.files;
     if (fileList) {
-      previewFiles(fileList)
+      convertFilesToImageDataAndNotify(fileList)
     }
     event.preventDefault();
-  }
-
-  function previewFiles(files: FileList): void {
-    for (const file of files) {
-      if (!allowedFileTypes.includes(file.type)) {
-        handleWrongTypeOfFile();
-      } else {
-        localFiles.value.push({
-          name: file.name,
-          url: URL.createObjectURL(file)
-        })
-      }
-    }
   }
 
   function handleUploadClick(): void {
@@ -68,19 +51,6 @@ watch(() => props.imgUrls, (newImgs) => {
     if(input) {
       input.click();
     }
-  }
-
-  function handleDelete(index: number): void {
-    remove(localFiles.value, (file, fileIndex) => fileIndex === index);
-  }
-
-  function insertCarImages(imgUrls: string[]): void {
-    imgUrls.forEach(imgUrl => {
-      localFiles.value.push({
-        name: 'testName',
-        url: imgUrl,
-      })
-    })
   }
 
   function handleWrongTypeOfFile(): void {
@@ -98,31 +68,54 @@ watch(() => props.imgUrls, (newImgs) => {
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'move';
       event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('imgIndex', imgIndex.toString())
+      event.dataTransfer.setData('imgIndex', imgIndex.toString());
     }
   }
 
   function handleDropLocalImg(event: DragEvent, imgIndex: number): void {
+    event.stopPropagation();
+
     if (event.dataTransfer) {
       const dragImgIndex = Number(event.dataTransfer.getData('imgIndex'))
-      swapItems(localFiles.value, imgIndex, dragImgIndex)
+      emit('swap-images', imgIndex, dragImgIndex)
     }
-  }
-
-  function swapItems(array: any[], itemIndexOne: number, itemIndexTwo: number): void {
-    let temporaryVariable = array[itemIndexOne];
-    array[itemIndexOne] = array[Number(itemIndexTwo)];
-    array[Number(itemIndexTwo)] = temporaryVariable;
   }
 
   function handleImportImg(event: Event): void {
     if (event.target) {
-      Array.from((event.target as HTMLInputElement).files || []).forEach(file => {
-        localFiles.value.push({
-          name: file.name,
-          url: URL.createObjectURL(file)
-        })
-      })
+      convertFilesToImageDataAndNotify(Array.from((event.target as HTMLInputElement).files ?? []))
+    }
+  }
+
+  function convertFilesToImageDataAndNotify(files: FileList | File[]): void {
+    const previewFiles: ImgDataFileExtended[] = [];
+
+    for (const file of files) {
+      const fileConvertedToImageData = handleImportedFile(file);
+
+      if (fileConvertedToImageData) {
+        previewFiles.push(fileConvertedToImageData);
+      }
+    }
+
+    emit('update-images', previewFiles)
+  }
+
+  function handleImportedFile(file: File): ImgDataFileExtended | undefined {
+    if (!allowedFileTypes.includes(file.type)) {
+      handleWrongTypeOfFile();
+      return;
+    } else {
+      return convertFileToImageData(file);
+    }
+  }
+
+  function convertFileToImageData(file: File): ImgDataFileExtended {
+    return {
+      imgPath: URL.createObjectURL(file),
+      imgId: null,
+      mainImg: false,
+      file: file,
     }
   }
 </script>
@@ -136,7 +129,7 @@ watch(() => props.imgUrls, (newImgs) => {
         @dragover="handleDragOver"
     >
       <div
-          v-if="!localFiles.length"
+          v-if="!imgData.length"
           class="no-uploaded-images-container"
       >
         <div
@@ -172,12 +165,13 @@ watch(() => props.imgUrls, (newImgs) => {
           class="preview-container"
       >
         <HoverImg
-            v-for="(file, fileIndex) in localFiles"
-            :img-index="fileIndex"
-            :src="file.url"
-            @delete="handleDelete"
-            @dragstart="(event) => handleDragStartLocalImg(event, fileIndex)"
-            @drop="(event) => handleDropLocalImg(event, fileIndex)"
+            v-for="(img, imgIndex) in imgData"
+            :img-id="img.imgId as string"
+            :src="img.imgPath"
+            :main-img="imgIndex === 0"
+            @delete="(imgId: string) => emit('delete-item', imgId)"
+            @dragstart="(event) => handleDragStartLocalImg(event, imgIndex)"
+            @drop="(event) => handleDropLocalImg(event, imgIndex)"
         />
 
       </div>

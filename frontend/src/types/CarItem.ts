@@ -1,4 +1,5 @@
 import {bodyType, type CarEquipment, driveType, fuelType} from "./CarEquipment";
+import type {ImageData} from "@/types/ImageData";
 
 type FuelType = typeof fuelType[number];
 type BodyType = typeof bodyType[number];
@@ -11,7 +12,7 @@ export interface CarItem {
     paliwo: FuelType | null;
     moc: number | null;
     pojemnosc: number | null;
-    imgs: string[];
+    imgs: ImageData[];
     nadwozie: BodyType | null;
     naped: DriveType | null;
     liczbaDrzwi: number | null;

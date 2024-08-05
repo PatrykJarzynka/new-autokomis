@@ -1,21 +1,47 @@
-import axios from "axios";
 import type {CarItem} from "@/types/CarItem";
+import {client} from "@/api/httpClient";
+import type {CarItemModel} from "@/models/CarItemModel";
 
-const baseURL = 'http://localhost:3000'
+const ENDPOINT = '/cars'
 
 function useCarsApi() {
 
-    async function createNewCar(carItem: CarItem): Promise<void> {
-        await axios.post(`${baseURL}/cars`, carItem)
+    async function getCar(carId: number): Promise<CarItemModel> {
+        try {
+            const response = await client.get(`${ENDPOINT}/${carId}` )
+            return response.data;
+        }
+        catch (error: any) {
+            throw new Error(error)
+        }
     }
 
-    async function getAllCars(): Promise<void> {
-        await axios.get(`${baseURL}/cars`)
+    async function createNewCar(carItem: CarItem): Promise<CarItemModel> {
+        try {
+            const response = (await client.post(ENDPOINT, carItem))
+            return response.data;
+        }
+        catch (error: any) {
+            throw new Error(error)
+        }
     }
+
+    async function getAllCars(): Promise<CarItem[]> {
+        try {
+            const response = await client.get(ENDPOINT)
+            return response.data
+        }
+        catch (error: any) {
+            throw new Error(error);
+        }
+    }
+
+
 
     return {
         createNewCar,
-        getAllCars
+        getAllCars,
+        getCar
     }
 }
 

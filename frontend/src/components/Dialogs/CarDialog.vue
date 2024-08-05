@@ -6,12 +6,15 @@ import CarDialogForm from "@/components/CarOffer/CarDialogForm.vue";
 import {defaultCarItem} from "@/utils/temporary-car-items";
 import type {DialogActions} from "@/types/DialogActions";
 import useCarsApi from "@/api/api.cars";
-import type {CarItem} from "@/types/CarItem";
 import Dialog from '@/components/Dialog.vue'
+import type {CarItemExtended} from "@/types/CarItemExtended";
+import useImagesApi from "@/api/api.images";
+import type {CarItemModel} from "@/models/CarItemModel";
 
 const carsApi = useCarsApi();
+const imagesApi = useImagesApi();
 
-const carModel = ref<CarItem>(defaultCarItem);
+const carModel = ref<CarItemModel>(defaultCarItem);
 const dialog = ref<InstanceType<typeof Dialog>>();
 const carForm = ref<InstanceType<typeof CarDialogForm>>();
 const dialogActions = ref<DialogActions>({
@@ -27,17 +30,27 @@ const dialogActions = ref<DialogActions>({
   }
 })
 
-function handleUpdate(newCarItem: CarItem): void {
-  carModel.value = newCarItem;
+async function handleSubmit(data: CarItemExtended): Promise<void> {
+  carModel.value = data.carItem;
+  const newCar = await carsApi.createNewCar(carModel.value);
 
-  carsApi.createNewCar(newCarItem)
+  if (data.importedImages.length) {
+    const formData = new FormData();
+    Array.from(data.importedImages).forEach(image => {
+      formData.append('images', image.imgFile);
+      formData.append('mainImg', JSON.stringify(image.mainImg));
+    })
+
+    await imagesApi.uploadImages(formData, newCar.carId);
+  }
 
   closeDialog();
 }
 
-function openDialog(carItem?: CarItem): void {
+async function openDialog(carItem?: CarItemModel): Promise<void> {
   if (carItem) {
     carModel.value = carItem
+    carModel.value.imgs = await imagesApi.fetchCarImages(21);
   }
 
   dialog.value?.openDialog()
@@ -63,7 +76,7 @@ defineExpose({
       <CarDialogForm
           ref="carForm"
           :carItem="carModel"
-          @update:carItem="handleUpdate"
+          @submit="handleSubmit"
       />
     </template>
   </Dialog>

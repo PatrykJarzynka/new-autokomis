@@ -39,10 +39,6 @@ function removeFalsyValues(equipment: CarEquipment): CarEquipment {
   return equipmentCopy;
 }
 
-watch(() => props.equipment, (s) => {
-  console.log(s)
-})
-
 onMounted(() => {
   if (props.readonly) {
     equipmentState.value = removeFalsyValues(props.equipment);

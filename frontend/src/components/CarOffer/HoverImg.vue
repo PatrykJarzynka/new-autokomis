@@ -1,12 +1,13 @@
 <script setup lang="ts">
   interface Props {
     src: string;
-    imgIndex: number;
+    imgId: string;
+    mainImg: boolean;
   }
 
 defineProps<Props>()
   const emit = defineEmits<{
-    (e: 'delete', index: number): void;
+    (e: 'delete', id: string): void;
     (e: 'dragstart', event: DragEvent): void;
     (e: 'drop', event: DragEvent): void;
   }>()
@@ -18,7 +19,7 @@ defineProps<Props>()
       <div
           v-bind="props"
           :draggable="true"
-          :class="imgIndex === 0 ? 'main-img' : ''"
+          :class="mainImg ? 'main-img' : ''"
           class="hover-img-container"
           @dragstart="emit('dragstart', $event)"
           @drop="emit('drop', $event)"
@@ -30,7 +31,7 @@ defineProps<Props>()
             <v-btn
                 size="50"
                 class="rounded-circle"
-                @click="emit('delete', imgIndex)"
+                @click="emit('delete', imgId)"
             >
               <v-icon
                   class="icon-delete"
