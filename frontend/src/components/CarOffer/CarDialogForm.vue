@@ -7,7 +7,7 @@ import type {VForm} from "vuetify/components";
 import DragAndDrop from "@/components/CarOffer/DragAndDrop.vue";
 import {bodyType, driveType, fuelType} from "@/types/CarEquipment";
 import type {EquipmentCategoryItemUpdate} from "@/types/EquipmentUpdate";
-import {cloneDeep, isNumber, remove} from "lodash";
+import {isNumber, remove} from "lodash";
 import type {CarItemExtended} from "@/types/CarItemExtended";
 import type {CarItemModel} from "@/models/CarItemModel";
 import type {ImageData, ImgDataBasic, ImgDataFileExtended} from "@/types/ImageData";
@@ -74,6 +74,7 @@ function selectMainImage(images: ImgDataBasic[]): ImageData[] {
       imgPath: image.imgPath
     }
   })
+
 }
 
 function handleUpdate(value: EquipmentCategoryItemUpdate) {

@@ -7,11 +7,12 @@ import CarEquipment from "@/components/CarOffer/CarEquipment.vue";
 import ImgDialog from "@/components/Dialogs/ImgDialog.vue";
 import CarDialog from "@/components/Dialogs/CarDialog.vue";
 import ConfirmationDialog from "@/components/Dialogs/ConfirmationDialog.vue";
-import type {CarItem} from "@/types/CarItem";
 import useCarsApi from "@/api/api.cars";
 import type {CarItemModel} from "@/models/CarItemModel";
+import useStringConverter from "@/composables/useStringConverter";
 
 const { getRouteParam } = useRouteHandler();
+const { createImagePath } = useStringConverter()
 const carsApi = useCarsApi();
 const carItem = ref<CarItemModel>();
 const selectedItemIndex = ref<number>(0);
@@ -104,8 +105,8 @@ function handleDeleteOffer(): void {
               <v-carousel-item
                   class="cursor-pointer"
                   v-for="img in carItem.imgs"
-                  :key="img"
-                  :src="img"
+                  :key="img.imgId as string"
+                  :src="createImagePath(img.imgPath)"
                   @click="handleSelectedImgClick"
               />
             </v-carousel>
@@ -121,7 +122,7 @@ function handleDeleteOffer(): void {
             >
               <v-img
                   :class="selectedItemIndex !== imgIndex ? 'no-selected' : ''"
-                  :src="img"
+                  :src="createImagePath(img.imgPath)"
               />
             </v-col>
           </v-row>
@@ -130,7 +131,7 @@ function handleDeleteOffer(): void {
             <ImgDialog
                 ref="imgDialog"
                 v-model="selectedItemIndex"
-                :car-img-srcs="carItem.imgs"
+                :car-img-srcs="carItem.imgs.map(img => createImagePath(img.imgPath))"
             />
           </template>
         </v-col>

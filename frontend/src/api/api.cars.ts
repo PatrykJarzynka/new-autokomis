@@ -1,6 +1,7 @@
 import type {CarItem} from "@/types/CarItem";
 import {client} from "@/api/httpClient";
 import type {CarItemModel} from "@/models/CarItemModel";
+import type {CarPreview} from "@/models/CarPreview";
 
 const ENDPOINT = '/cars'
 
@@ -26,9 +27,9 @@ function useCarsApi() {
         }
     }
 
-    async function getAllCars(): Promise<CarItem[]> {
+    async function getAllCarsPreview(): Promise<CarPreview[]> {
         try {
-            const response = await client.get(ENDPOINT)
+            const response = await client.get(`${ENDPOINT}/preview`)
             return response.data
         }
         catch (error: any) {
@@ -40,7 +41,7 @@ function useCarsApi() {
 
     return {
         createNewCar,
-        getAllCars,
+        getAllCarsPreview,
         getCar
     }
 }

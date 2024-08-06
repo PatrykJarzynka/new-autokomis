@@ -6,7 +6,7 @@ import {companyItems} from "@/utils/company-items";
 <template>
   <v-sheet
       width="100%"
-      height="700"
+      height="600"
       color="white"
       class="company-tile--container"
   >

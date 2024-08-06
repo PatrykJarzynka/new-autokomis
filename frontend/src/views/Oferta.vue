@@ -1,22 +1,23 @@
 <script setup lang="ts">
 
-import {temporaryCarItems} from "@/utils/temporary-car-items";
 import {useRouter} from "vue-router";
-import type {CarItem} from "@/types/CarItem";
 import {onMounted, ref} from "vue";
 import useCarsApi from "@/api/api.cars";
+import type {CarPreview} from "@/models/CarPreview";
+import useStringConverter from "@/composables/useStringConverter";
 
 const router = useRouter();
-const { getAllCars } = useCarsApi();
+const { getAllCarsPreview } = useCarsApi();
+const { createImagePath } = useStringConverter()
 
 function handleClick(itemId: string): void {
   router.push({ path: `/oferta/${itemId}` });
 }
 
-const carItems = ref<CarItem[]>();
+const carItems = ref<CarPreview[]>();
 
 onMounted(async () => {
-  carItems.value = await getAllCars();
+  carItems.value = await getAllCarsPreview();
 })
 </script>
 
@@ -27,11 +28,11 @@ onMounted(async () => {
       <div class="offer-items-container">
         <v-card
             v-for="car in carItems"
-            @click="handleClick(car.id)"
+            @click="handleClick(car.carId as string)"
         >
             <v-img
-                :src="car?.imgs?.[0]"
-                :height="400"
+                :src="createImagePath(car.mainImg)"
+                :height="350"
                 :alt="`${car.title} zdjęcie`"
                 cover
             />
@@ -73,7 +74,6 @@ onMounted(async () => {
   .offer-items-container {
     display: grid;
     width: 100%;
-    flex: 1;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 30px;
   }
