@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import EquipementExpansionPanel from "@/components/CarOffer/EquipementExpansionPanel.vue";
 import {carEquipmentTranslations} from "@/translations/CarEquipmentTranslations";
-import {onMounted, ref, watch} from "vue";;
-import {cloneDeep} from "lodash";
-import type {CarEquipment} from "@/types/CarEquipment";
+import {onMounted, ref } from "vue";
+import {cloneDeep, omit} from "lodash";
+import type {
+  CarEquipment, CarEquipmentNoId,
+} from "@/types/CarEquipment";
 import type {EquipmentCategoryItemUpdate} from "@/types/EquipmentUpdate";
+import {defaultCarItem} from "@/utils/temporary-car-items";
 
 interface Props {
   equipment: CarEquipment;
@@ -17,9 +20,9 @@ interface Emit {
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits<Emit>()
+const emit = defineEmits<Emit>();
 
-const equipmentState = ref<CarEquipment | null>(null);
+const equipmentState = ref<CarEquipmentNoId | null>(null);
 
 function removeFalsyValues(equipment: CarEquipment): CarEquipment {
   const equipmentCopy = cloneDeep(equipment);
@@ -43,7 +46,10 @@ onMounted(() => {
   if (props.readonly) {
     equipmentState.value = removeFalsyValues(props.equipment);
   } else {
-    equipmentState.value = props.equipment;
+    equipmentState.value = {
+      ...defaultCarItem.wyposazenie,
+      ...props.equipment
+    }
   }
 })
 </script>

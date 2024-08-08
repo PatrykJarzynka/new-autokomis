@@ -1,4 +1,5 @@
 import {client} from "@/api/httpClient";
+import type {ImageData} from "@/types/ImageData";
 
 const ENDPOINT = '/images'
 

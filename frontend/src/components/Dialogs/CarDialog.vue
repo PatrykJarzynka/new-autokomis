@@ -14,6 +14,7 @@ import type {CarItemModel} from "@/models/CarItemModel";
 const carsApi = useCarsApi();
 const imagesApi = useImagesApi();
 
+const editMode = ref<boolean>(false);
 const carModel = ref<CarItemModel>(defaultCarItem);
 const dialog = ref<InstanceType<typeof Dialog>>();
 const carForm = ref<InstanceType<typeof CarDialogForm>>();
@@ -32,31 +33,38 @@ const dialogActions = ref<DialogActions>({
 
 async function handleSubmit(data: CarItemExtended): Promise<void> {
   carModel.value = data.carItem;
-  const newCar = await carsApi.createNewCar(carModel.value);
 
-  if (data.importedImages.length) {
-    const formData = new FormData();
-    Array.from(data.importedImages).forEach(image => {
-      formData.append('images', image.imgFile);
-      formData.append('mainImg', JSON.stringify(image.mainImg));
-    })
+  if (editMode.value) {
+    await carsApi.updateCar(carModel.value.carId as number, carModel.value);
+  } else {
+    const newCar = await carsApi.createNewCar(carModel.value);
 
-    await imagesApi.uploadImages(formData, newCar.carId);
+    if (data.importedImages.length) {
+      const formData = new FormData();
+      Array.from(data.importedImages).forEach(image => {
+        formData.append('images', image.imgFile);
+        formData.append('mainImg', JSON.stringify(image.mainImg));
+      })
+
+      await imagesApi.uploadImages(formData, newCar.carId);
+    }
   }
-
   closeDialog();
 }
 
 async function openDialog(carItem?: CarItemModel): Promise<void> {
   if (carItem) {
     carModel.value = carItem
-    carModel.value.imgs = await imagesApi.fetchCarImages(21);
+    carModel.value.imgs = await imagesApi.fetchCarImages(carItem.carId as number);
+    editMode.value = true;
   }
 
   dialog.value?.openDialog()
 }
 
 function closeDialog(): void {
+  carModel.value = defaultCarItem
+  editMode.value = false;
   dialog.value?.closeDialog();
 }
 

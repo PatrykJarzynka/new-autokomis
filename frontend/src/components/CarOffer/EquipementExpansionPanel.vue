@@ -2,14 +2,20 @@
   import {computed} from "vue";
   import CheckmarkDisplayData from "@/components/CheckmarkDisplayData.vue";
   import type {TranslationsData} from "@/translations/CarEquipmentTranslations";
-  import {isBoolean, isNil} from "lodash";
-  import {type CarEquipment, carEquipmentSelectItems} from "@/types/CarEquipment";
+  import {isBoolean, isNil, omit} from "lodash";
+  import {
+    type AudioMultimedia,
+    type CarEquipment, type CarEquipmentNoId,
+    carEquipmentSelectItems,
+    type Comfort, type DriveAssistance,
+    type Electric, type Performance, type Safety
+  } from "@/types/CarEquipment";
   import type {EquipmentItemUpdate} from "@/types/EquipmentUpdate";
 
   interface Props {
     readonly: boolean;
     translationsData: TranslationsData[keyof CarEquipment];
-    values: CarEquipment[keyof CarEquipment];
+    values: CarEquipmentNoId[keyof CarEquipmentNoId];
   }
 
   interface Emits {
@@ -35,7 +41,9 @@
   <v-expansion-panel v-if="Object.keys(values).length">
     <v-expansion-panel-title class="expansion-panel-title">{{translationsData.title}}</v-expansion-panel-title>
     <v-expansion-panel-text class="expansion-panel-content--container">
-      <div v-for="(itemValue, itemKey) in values">
+      <div
+          v-for="(itemValue, itemKey) in omit(values, 'id') "
+      >
         <div
             v-if="readonly"
             class="expansion-panel-content"
@@ -63,6 +71,7 @@
               :style="{flex: 1}"
               :label="translationsData.values[itemKey]"
               :items="carEquipmentSelectItems[itemKey]"
+              @update:model-value="(value) => handleUpdate(value, itemKey)"
           />
         </div>
       </div>

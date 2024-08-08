@@ -20,6 +20,7 @@ type RimsType = typeof carEquipmentSelectItems.felgi[number];
 
 
 export interface AudioMultimedia {
+    id: number;
     appleCarPlay: boolean;
     bluetooth: boolean;
     zestawGlosnomowiacy: boolean;
@@ -36,6 +37,7 @@ export interface AudioMultimedia {
 }
 
 export interface Comfort {
+    id: number;
     airConditioning: AirConditioningType | null;
     tapicerka: UpholsteryType | null;
     elektrycznyFotelKierowcy: boolean;
@@ -180,6 +182,15 @@ export interface Safety {
 export interface CarEquipment {
     audioMultimedia: AudioMultimedia;
     comfort: Comfort;
+    electric: Electric;
+    driveAssistance: DriveAssistance;
+    performance: Performance;
+    safety: Safety
+}
+
+export interface CarEquipmentNoId {
+    audioMultimedia: Omit<AudioMultimedia, 'id'> ;
+    comfort: Omit<Comfort, 'id'> ;
     electric: Electric;
     driveAssistance: DriveAssistance;
     performance: Performance;

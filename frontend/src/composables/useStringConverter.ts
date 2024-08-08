@@ -7,7 +7,13 @@ function useStringConverter() {
 
     function createImagePath(localPath: string): string {
         const appUrl = getEnv('VITE_APP_URL');
-        return `${appUrl}/${localPath}`
+        const webUrl = getEnv('VITE_WEB_URL');
+
+        if (!localPath.includes(webUrl)) {
+            return `${appUrl}/${localPath}`
+        } else {
+            return localPath
+        }
     }
 
     return {

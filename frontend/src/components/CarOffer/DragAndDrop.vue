@@ -2,7 +2,8 @@
 import {computed, ref} from "vue";
 import HoverImg from "@/components/CarOffer/HoverImg.vue";
 import { toast } from 'vue3-toastify'
-import type {ImageData, ImgDataBasic, ImgDataFileExtended} from "@/types/ImageData";
+import type { ImgDataBasic, ImgDataFileExtended} from "@/types/ImageData";
+import useStringConverter from "@/composables/useStringConverter";
 
   interface Props {
     imgData: ImgDataBasic[]
@@ -18,10 +19,11 @@ import type {ImageData, ImgDataBasic, ImgDataFileExtended} from "@/types/ImageDa
   const props = defineProps<Props>();
   const emit = defineEmits<Emit>()
   const allowedFileTypes = ['image/jpeg','image/gif','image/png','image/jpg'];
+  const { createImagePath } = useStringConverter()
+
   const isDragging = ref<boolean>(false);
 
   const numberOfGridRows = computed(() => {
-    console.log(props.imgData)
     return Math.ceil(props.imgData.length / 4);
   })
 
@@ -167,7 +169,7 @@ import type {ImageData, ImgDataBasic, ImgDataFileExtended} from "@/types/ImageDa
         <HoverImg
             v-for="(img, imgIndex) in imgData"
             :img-id="img.imgId as string"
-            :src="img.imgPath"
+            :src="createImagePath(img.imgPath)"
             :main-img="imgIndex === 0"
             @delete="(imgId: string) => emit('delete-item', imgId)"
             @dragstart="(event) => handleDragStartLocalImg(event, imgIndex)"

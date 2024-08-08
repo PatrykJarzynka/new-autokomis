@@ -37,12 +37,23 @@ function useCarsApi() {
         }
     }
 
+    async function updateCar(carId: number, data: CarItem) {
+        try {
+            const response = await client.put(`${ENDPOINT}/${carId}`, data)
+            return response.data
+        }
+        catch (error: any) {
+            throw new Error(error);
+        }
+    }
+
 
 
     return {
         createNewCar,
         getAllCarsPreview,
-        getCar
+        getCar,
+        updateCar
     }
 }
 

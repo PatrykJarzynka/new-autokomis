@@ -2,7 +2,7 @@
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import useStringConverter from "@/composables/useStringConverter";
 import CarEquipment from "@/components/CarOffer/CarEquipment.vue";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import type {VForm} from "vuetify/components";
 import DragAndDrop from "@/components/CarOffer/DragAndDrop.vue";
 import {bodyType, driveType, fuelType} from "@/types/CarEquipment";
@@ -11,6 +11,7 @@ import {isNumber, remove} from "lodash";
 import type {CarItemExtended} from "@/types/CarItemExtended";
 import type {CarItemModel} from "@/models/CarItemModel";
 import type {ImageData, ImgDataBasic, ImgDataFileExtended} from "@/types/ImageData";
+import {toast} from "vue3-toastify";
 
 interface Props {
   carItem: CarItemModel;
@@ -56,13 +57,23 @@ async function handleSubmit(): Promise<void> {
 
   if(isValid?.valid) {
 
-    emit('submit', {
-      carItem: {
-        ...carData.value,
-        imgs: convertedImages.filter(image => !isNumber(image.imgId))
-      },
-      importedImages: importedImages.value,
-    })
+    if (!convertedImages.length) {
+      toast('Brak zdjęć!',
+          {
+            type: 'error',
+            position: 'bottom-center',
+            transition: "slide",
+            theme: 'colored'
+          });
+    } else {
+      emit('submit', {
+        carItem: {
+          ...carData.value,
+          imgs: convertedImages.filter(image => !isNumber(image.imgId))
+        },
+        importedImages: importedImages.value,
+      })
+    }
   }
 }
 
@@ -124,7 +135,7 @@ defineExpose({
 
       <v-container>
         <v-text-field
-            :model-valuue="carData.title"
+            :model-value="carData.title"
             class="pb-3"
             variant="outlined"
             label="Tytuł*"
